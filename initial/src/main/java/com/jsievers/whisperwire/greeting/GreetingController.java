@@ -1,4 +1,4 @@
-package com.example.restservice;
+package com.jsievers.whisperwire.greeting;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,6 +13,7 @@ public class GreetingController {
 
     @GetMapping("/greeting")
     public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        String testString = "hej";
         return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
 }

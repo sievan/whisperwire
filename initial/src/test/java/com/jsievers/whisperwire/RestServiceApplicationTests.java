@@ -1,4 +1,4 @@
-package com.example.restservice;
+package com.jsievers.whisperwire;
 
 import org.junit.jupiter.api.Test;
 
