@@ -3,5 +3,6 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: my-group
+      ws-group-id: ws-group
       auto-offset-reset: earliest
       enable-auto-commit: true

@@ -2,6 +2,7 @@ package com.jsievers.whisperwire.messages;
 
 import org.springframework.stereotype.Service;
 
+// Used for
 @Service
 public class KafkaConfigService {
 

@@ -19,7 +19,7 @@ public class MessagesController {
     }
 
     @PostMapping("/messages")
-    public String createMessage(@RequestBody Message message) {
+    public String createMessage(@RequestBody WMessage message) {
         return messageService.create(message);
     }
 }

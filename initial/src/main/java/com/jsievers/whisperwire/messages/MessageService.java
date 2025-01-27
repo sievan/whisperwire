@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class MessageService {
@@ -50,17 +51,24 @@ public class MessageService {
         return messages;
     }
 
-    public String create(Message message) {
+    public String create(WMessage message) {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", kafkaConfigService.getBootstrapServers());
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.springframework.kafka.support.serializer.JsonSerializer");
 
-        KafkaProducer<String, Message> producer = new KafkaProducer<>(properties);
+        KafkaProducer<String, WMessage> producer = new KafkaProducer<>(properties);
 
-        producer.send(new ProducerRecord<>("test-topic", message.conversationId(), message));
-
-        return "OK";
+        try {
+            RecordMetadata res = producer.send(new ProducerRecord<>("test-topic", message.conversationId(), message)).get();
+            System.out.println(res);
+            return "OK";
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     private KafkaConsumer<String, String> getKafkaConsumer(String topic) {
