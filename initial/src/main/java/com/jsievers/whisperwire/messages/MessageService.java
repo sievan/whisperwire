@@ -30,7 +30,7 @@ public class MessageService {
     private String autoOffsetReset;
 
     @Autowired
-    private KafkaConfigService kafkaConfigService;
+    private KafkaConfig kafkaConfig;
 
     public List<String> getAllMessages(String topic) {
         KafkaConsumer<String, String> consumer = getKafkaConsumer(topic);
@@ -53,7 +53,7 @@ public class MessageService {
 
     public String create(WMessage message) {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", kafkaConfigService.getBootstrapServers());
+        properties.put("bootstrap.servers", kafkaConfig.getBootstrapServers());
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.springframework.kafka.support.serializer.JsonSerializer");
 
@@ -61,7 +61,6 @@ public class MessageService {
 
         try {
             RecordMetadata res = producer.send(new ProducerRecord<>("test-topic", message.conversationId(), message)).get();
-            System.out.println(res);
             return "OK";
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -74,9 +73,9 @@ public class MessageService {
     private KafkaConsumer<String, String> getKafkaConsumer(String topic) {
         // Properties for the Kafka consumer
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", kafkaConfigService.getBootstrapServers());
-        properties.put("group.id", kafkaConfigService.getGroupId());
-        properties.put("auto.offset.reset", kafkaConfigService.getAutoOffsetReset());  // Ensure we start from the earliest offset
+        properties.put("bootstrap.servers", kafkaConfig.getBootstrapServers());
+        properties.put("group.id", kafkaConfig.getGroupId());
+        properties.put("auto.offset.reset", kafkaConfig.getAutoOffsetReset());  // Ensure we start from the earliest offset
         properties.put("key.deserializer", StringDeserializer.class.getName());
         properties.put("value.deserializer", StringDeserializer.class.getName());
 

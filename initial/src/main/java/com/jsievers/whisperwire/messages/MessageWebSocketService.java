@@ -16,9 +16,6 @@ public class MessageWebSocketService {
             groupId = "ws-group"
     )
     public void listen(WMessage message) {
-//        WMessage message = record.value();
-        // Create JSON or format message content as needed
-        System.out.println("Broadcasting: " + message);
         String formattedMessage = String.format("{\"content\":\"%s\",\"author\":\"%s\"}",
                 message.content(), message.author());
         websocketHandler.broadcastToConversation(message.conversationId(), formattedMessage);

@@ -41,9 +41,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     public void broadcastToConversation(String conversationId, String message) {
         Set<WebSocketSession> sessions = conversationSessions.get(conversationId);
-        System.out.println("Message: " + message + ", Conv: " + conversationId);
         if (sessions != null) {
-            System.out.println("Körs!");
             TextMessage textMessage = new TextMessage(message);
             sessions.removeIf(session -> !session.isOpen());
             sessions.forEach(session -> {

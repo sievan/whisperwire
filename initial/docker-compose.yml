@@ -2,6 +2,7 @@ version: '3.8'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
+    stop_grace_period: 4s
     container_name: zookeeper
     ports:
       - "2181:2181"
@@ -11,6 +12,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SESSION_TIMEOUT: 3000
 
   kafka:
     image: confluentinc/cp-kafka:7.3.0
