@@ -41,7 +41,7 @@ class KafkaConfig {
     public String getBootstrapServers() {
         return kafkaProperties.getBootstrapServers();
     }
-    
+
     public String getGroupId() {
         return kafkaProperties.getConsumer().getGroupId();
     }
