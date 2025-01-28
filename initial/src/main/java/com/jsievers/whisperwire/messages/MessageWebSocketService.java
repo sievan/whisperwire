@@ -12,8 +12,7 @@ public class MessageWebSocketService {
 
     @KafkaListener(
             topics = "test-topic",
-            containerFactory = "kafkaWmListenerContainerFactory",
-            groupId = "ws-group"
+            containerFactory = "kafkaWsListenerContainerFactory"
     )
     public void listen(WMessage message) {
         String formattedMessage = String.format("{\"content\":\"%s\",\"author\":\"%s\"}",

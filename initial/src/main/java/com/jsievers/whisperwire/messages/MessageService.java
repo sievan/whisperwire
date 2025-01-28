@@ -1,87 +1,56 @@
 package com.jsievers.whisperwire.messages;
 
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
 
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String bootstrapServers;
+    private final KafkaTemplate<String, WMessage> kafkaTemplate;
+    private final Deque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
+    private static final int MAX_RECENT_MESSAGES = 10;
 
-    @Value("${spring.kafka.consumer.group-id}")
-    private String groupId;
-
-    @Value("${spring.kafka.consumer.auto-offset-reset}")
-    private String autoOffsetReset;
-
-    @Autowired
-    private KafkaConfig kafkaConfig;
-
-    public List<String> getAllMessages(String topic) {
-        KafkaConsumer<String, String> consumer = getKafkaConsumer(topic);
-
-        TopicPartition partition = new TopicPartition("test-topic", 0);
-        List<TopicPartition> partitions = new ArrayList<>();
-        partitions.add(partition);
-        consumer.assign(partitions);
-
-        int messagesToRetrieve = 10;
-        consumer.seekToEnd(partitions);
-        long startIndex = Math.max(consumer.position(partition) - messagesToRetrieve, 0);
-        consumer.seek(partition, startIndex);
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMinutes(1));
-
-        List<String> messages = records.records(partition).stream().map(msg -> msg.value()).toList();
-
-        return messages;
+    public MessageService(KafkaTemplate<String, WMessage> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
-    public String create(WMessage message) {
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", kafkaConfig.getBootstrapServers());
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.springframework.kafka.support.serializer.JsonSerializer");
-
-        KafkaProducer<String, WMessage> producer = new KafkaProducer<>(properties);
-
-        try {
-            RecordMetadata res = producer.send(new ProducerRecord<>("test-topic", message.conversationId(), message)).get();
-            return "OK";
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+    @KafkaListener(
+            topics = "test-topic",
+            containerFactory = "kafkaHistoryListenerContainerFactory",
+            concurrency = "3"  // Number of consumer threads
+    )
+    public void listen(WMessage message) {
+        recentMessages.addFirst(message);
+        while (recentMessages.size() > MAX_RECENT_MESSAGES) {
+            recentMessages.removeLast();
         }
     }
 
-    private KafkaConsumer<String, String> getKafkaConsumer(String topic) {
-        // Properties for the Kafka consumer
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", kafkaConfig.getBootstrapServers());
-        properties.put("group.id", kafkaConfig.getGroupId());
-        properties.put("auto.offset.reset", kafkaConfig.getAutoOffsetReset());  // Ensure we start from the earliest offset
-        properties.put("key.deserializer", StringDeserializer.class.getName());
-        properties.put("value.deserializer", StringDeserializer.class.getName());
+    public List<String> getAllMessages(String topic) {
+        return recentMessages.stream()
+                .map(WMessage::toString)
+                .collect(Collectors.toList());
+    }
 
-        // Create the Kafka consumer
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
-
-        return consumer;
+    public String create(WMessage message) {
+        try {
+            SendResult<String, WMessage> result = kafkaTemplate
+                    .send("test-topic", message.conversationId(), message)
+                    .get();
+            return "OK";
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Message sending interrupted", e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Error sending message", e);
+        }
     }
 }
