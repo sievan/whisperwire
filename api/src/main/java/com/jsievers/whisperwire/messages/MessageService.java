@@ -1,10 +1,13 @@
 package com.jsievers.whisperwire.messages;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -17,6 +20,8 @@ public class MessageService {
     private final KafkaTemplate<String, WMessage> kafkaTemplate;
     private final Deque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
     private static final int MAX_RECENT_MESSAGES = 10;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public MessageService(KafkaTemplate<String, WMessage> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -34,13 +39,11 @@ public class MessageService {
         }
     }
 
-    public List<String> getAllMessages(String topic) {
-        return recentMessages.stream()
-                .map(WMessage::toString)
-                .collect(Collectors.toList());
+    public List<WMessage> getAllMessages(String topic) {
+        return new ArrayList<>(recentMessages);
     }
 
-    public String create(WMessage message) {
+    public String create(String conversationId, WMessage message) {
         try {
             SendResult<String, WMessage> result = kafkaTemplate
                     .send("test-topic", message.conversationId(), message)
