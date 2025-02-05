@@ -8,23 +8,32 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
+
 
 @Service
 public class MessageService {
 
     private final KafkaTemplate<String, WMessage> kafkaTemplate;
-    private final Deque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
+    private final ConcurrentHashMap<String, ConcurrentLinkedDeque<WMessage>> recentMessagesMap = new ConcurrentHashMap<>();
     private static final int MAX_RECENT_MESSAGES = 20;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     public MessageService(KafkaTemplate<String, WMessage> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+    }
+
+
+    private void addMessage(WMessage message) {
+        String key = message.conversationId();
+
+        recentMessagesMap.computeIfAbsent(key, k -> new ConcurrentLinkedDeque<>()).addFirst(message);
     }
 
     @KafkaListener(
@@ -34,13 +43,17 @@ public class MessageService {
     )
     public void listen(WMessage message) {
         recentMessages.addFirst(message);
-        while (recentMessages.size() > MAX_RECENT_MESSAGES) {
-            recentMessages.removeLast();
-        }
+        addMessage(message);
     }
 
-    public List<WMessage> getAllMessages(String topic) {
-        return new ArrayList<>(recentMessages);
+    public List<WMessage> getAllMessages(String topic, String conversationId) {
+        if(conversationId == null) {
+            return new ArrayList<>(recentMessages);
+        } else if (!recentMessagesMap.containsKey(conversationId)) {
+            return new ArrayList<>();
+        }
+
+        return new ArrayList<>(recentMessagesMap.get(conversationId));
     }
 
     public String create(String conversationId, WMessage message) {

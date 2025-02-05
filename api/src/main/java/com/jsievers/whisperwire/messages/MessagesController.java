@@ -1,6 +1,7 @@
 package com.jsievers.whisperwire.messages;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,9 +15,8 @@ public class MessagesController {
     private MessageService messageService;
 
     @GetMapping("/messages")
-    public Messages getAllMessages() {
-        String testString = "hej";
-        List<WMessage> messages = messageService.getAllMessages("test-topic");
+    public Messages getAllMessages(@RequestParam(required = false) String conversationId) {
+        List<WMessage> messages = messageService.getAllMessages("test-topic", conversationId);
 
         return new Messages(messages);
     }

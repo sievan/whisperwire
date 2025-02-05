@@ -5,7 +5,7 @@ import { Stack } from "@chakra-ui/react";
 const MessagingContainer = () => {
   return (
     <Stack height="100%">
-      <Messages />
+      <Messages flex={1} />
       <MessageInput />
     </Stack>
   );
