@@ -1,13 +1,11 @@
 import "./App.css";
-import MessageInput from "@/components/messaging/messageInput";
-import Messages from "@/components/messaging/Messages";
+import MessagingContainer from "@/components/messaging/MessagingContainer";
 import { ColorModeButton } from "@/components/ui/color-mode";
 
 function App() {
   return (
     <>
-      <Messages />
-      <MessageInput />
+      <MessagingContainer />
       <ColorModeButton />
     </>
   );

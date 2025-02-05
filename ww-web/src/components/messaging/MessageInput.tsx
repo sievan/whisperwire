@@ -1,5 +1,5 @@
 import { KeyboardEvent, useState } from "react";
-import { Textarea, IconButton, Box, VStack } from "@chakra-ui/react";
+import { Textarea, IconButton, Box, VStack, chakra } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
 
 type PostMessage = {
@@ -8,7 +8,7 @@ type PostMessage = {
 };
 
 async function sendMessage(conversationId: string, message: PostMessage) {
-  const res = await fetch(
+  await fetch(
     `http://localhost:8080/messages?conversationId=${conversationId}`,
     {
       mode: "cors",
@@ -21,10 +21,13 @@ async function sendMessage(conversationId: string, message: PostMessage) {
   );
 
   console.log("OK");
-  // return (await res.json());
 }
 
-const MessageInput = () => {
+type MessageInputProps = {
+  className?: string;
+};
+
+const MessageInput = chakra(({ className }: MessageInputProps) => {
   const [message, setMessage] = useState("");
 
   const handleSubmit = () => {
@@ -46,7 +49,7 @@ const MessageInput = () => {
   };
 
   return (
-    <Box position="relative" width="full" maxW="2xl" mx="auto">
+    <Box className={className} position="relative" width="full" my={2}>
       <VStack gap={0}>
         <Textarea
           value={message}
@@ -58,6 +61,7 @@ const MessageInput = () => {
           maxH="200px"
           resize="vertical"
           borderRadius="lg"
+          borderColor="gray.400"
           _focus={{
             borderColor: "blue.500",
             boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
@@ -82,6 +86,6 @@ const MessageInput = () => {
       </VStack>
     </Box>
   );
-};
+});
 
 export default MessageInput;

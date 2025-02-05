@@ -1,5 +1,11 @@
-import { Text, VStack } from "@chakra-ui/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Box, chakra, Text, VStack } from "@chakra-ui/react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 type Message = {
   author: string;
@@ -18,11 +24,38 @@ async function fetchMessages(conversationId: string): Promise<Message[]> {
   return (await res.json()).messages;
 }
 
-const Messages = () => {
+type MessageContainerProps = {
+  author: string;
+  content: string;
+};
+
+const MESSAGE_SPACING = 3;
+
+const MessageContainer = ({ author, content }: MessageContainerProps) => (
+  <VStack
+    width={"80%"}
+    alignItems={"left"}
+    gap={1}
+    padding={2}
+    margin={MESSAGE_SPACING}
+    borderRadius={4}
+    backgroundColor={"blue.100"}
+  >
+    <Text color="bodyText" fontSize="sm" fontWeight="bold">
+      {author}
+    </Text>
+    <Text>{content}</Text>
+  </VStack>
+);
+
+type MessagesProps = {
+  className?: string;
+};
+
+const Messages = chakra(({ className }: MessagesProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const ws = useRef<WebSocket | null>(null);
-
-  console.log("render");
+  const endOfChat = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -50,16 +83,28 @@ const Messages = () => {
     };
   }, [handleOnMessage]);
 
+  useLayoutEffect(() => {
+    if (!endOfChat.current) return;
+
+    endOfChat.current.scrollIntoView();
+  });
+
   return (
-    <>
-      {messages.map(({ author, content }) => (
-        <VStack width={"100%"} alignItems={"left"} gap={1} paddingY={2}>
-          <Text>Author: {author}</Text>
-          <Text>{content}</Text>
-        </VStack>
-      ))}
-    </>
+    <Box
+      overflowY="scroll"
+      border="1px solid"
+      borderRadius={8}
+      borderColor="gray.300"
+      className={className}
+    >
+      <Box>
+        {messages.map(({ author, content }) => (
+          <MessageContainer author={author} content={content} />
+        ))}
+        <div ref={endOfChat} />
+      </Box>
+    </Box>
   );
-};
+});
 
 export default Messages;

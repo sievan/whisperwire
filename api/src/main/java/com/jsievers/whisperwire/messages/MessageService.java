@@ -19,7 +19,7 @@ public class MessageService {
 
     private final KafkaTemplate<String, WMessage> kafkaTemplate;
     private final Deque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
-    private static final int MAX_RECENT_MESSAGES = 10;
+    private static final int MAX_RECENT_MESSAGES = 20;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
