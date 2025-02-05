@@ -67,7 +67,7 @@ const Messages = chakra(({ className }: MessagesProps) => {
       const messages = await fetchMessages(conversationId);
       setMessages(messages.reverse());
     })();
-  }, []);
+  }, [conversationId]);
 
   const handleOnMessage = useCallback((event: MessageEvent) => {
     console.log("Message: ", event.data);
