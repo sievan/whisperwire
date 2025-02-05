@@ -1,6 +1,7 @@
 import { KeyboardEvent, useState } from "react";
 import { Textarea, IconButton, Box, VStack, chakra } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
+import { useParams } from "react-router";
 
 type PostMessage = {
   author: string;
@@ -28,12 +29,16 @@ type MessageInputProps = {
 };
 
 const MessageInput = chakra(({ className }: MessageInputProps) => {
+  const { conversationId } = useParams();
   const [message, setMessage] = useState("");
 
   const handleSubmit = () => {
     if (message.trim()) {
+      if (!conversationId) {
+        throw new Error("No conversation id provided");
+      }
       console.log("Sending message:", message);
-      sendMessage("2", {
+      sendMessage(conversationId, {
         author: "Sievan",
         content: message,
       });
@@ -56,10 +61,10 @@ const MessageInput = chakra(({ className }: MessageInputProps) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Type your message..."
-          pr="14"
+          paddingRight={3}
           minH="50px"
           maxH="200px"
-          resize="vertical"
+          resize="none"
           borderRadius="lg"
           borderColor="gray.400"
           _focus={{

@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useParams } from "react-router";
 
 type Message = {
   author: string;
@@ -13,13 +14,16 @@ type Message = {
   conversationId: string;
 };
 
-async function fetchMessages(conversationId: string): Promise<Message[]> {
-  const res = await fetch(`http://localhost:8080/messages?${conversationId}`, {
-    mode: "cors",
-    headers: {
-      "Content-Type": "application/json",
+async function fetchMessages(conversationId?: string): Promise<Message[]> {
+  const res = await fetch(
+    `http://localhost:8080/messages?conversationId=${conversationId}`,
+    {
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   return (await res.json()).messages;
 }
@@ -33,7 +37,7 @@ const MESSAGE_SPACING = 3;
 
 const MessageContainer = ({ author, content }: MessageContainerProps) => (
   <VStack
-    width={"80%"}
+    width={"70%"}
     alignItems={"left"}
     gap={1}
     padding={2}
@@ -53,13 +57,14 @@ type MessagesProps = {
 };
 
 const Messages = chakra(({ className }: MessagesProps) => {
+  const { conversationId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const ws = useRef<WebSocket | null>(null);
   const endOfChat = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     (async () => {
-      const messages = await fetchMessages("TEST");
+      const messages = await fetchMessages(conversationId);
       setMessages(messages.reverse());
     })();
   }, []);
@@ -70,7 +75,9 @@ const Messages = chakra(({ className }: MessagesProps) => {
   }, []);
 
   useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:8080/ws?conversationId=2");
+    ws.current = new WebSocket(
+      `ws://localhost:8080/ws?conversationId=${conversationId}`,
+    );
     ws.current.onopen = () => console.log("Websocket connection opened");
     ws.current.onclose = () => console.log("Websocket connection closed");
 
@@ -81,7 +88,7 @@ const Messages = chakra(({ className }: MessagesProps) => {
     return () => {
       wsCurrent.close();
     };
-  }, [handleOnMessage]);
+  }, [handleOnMessage, conversationId]);
 
   useLayoutEffect(() => {
     if (!endOfChat.current) return;
@@ -95,9 +102,11 @@ const Messages = chakra(({ className }: MessagesProps) => {
       border="1px solid"
       borderRadius={8}
       borderColor="gray.300"
+      display="flex"
+      alignItems="flex-end"
       className={className}
     >
-      <Box>
+      <Box flexGrow={1}>
         {messages.map(({ author, content }) => (
           <MessageContainer author={author} content={content} />
         ))}

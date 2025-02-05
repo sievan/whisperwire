@@ -1,4 +1,3 @@
-import "./App.css";
 import MessagingContainer from "@/components/messaging/MessagingContainer";
 import { ColorModeButton } from "@/components/ui/color-mode";
 
