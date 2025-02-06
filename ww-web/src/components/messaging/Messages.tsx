@@ -9,6 +9,7 @@ import {
 import { useParams } from "react-router";
 
 type Message = {
+  id: string;
   author: string;
   content: string;
   conversationId: string;
@@ -107,8 +108,8 @@ const Messages = chakra(({ className }: MessagesProps) => {
       className={className}
     >
       <Box flexGrow={1}>
-        {messages.map(({ author, content }) => (
-          <MessageContainer author={author} content={content} />
+        {messages.map(({ id, author, content }) => (
+          <MessageContainer key={id} author={author} content={content} />
         ))}
         <div ref={endOfChat} />
       </Box>

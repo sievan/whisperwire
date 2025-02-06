@@ -57,4 +57,5 @@ flyway {
 	driver = 'org.postgresql.Driver'
 	baselineOnMigrate = true
 	locations = ['filesystem:src/main/resources/db/migration']
+	cleanDisabled = false
 }

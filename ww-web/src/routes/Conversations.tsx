@@ -64,8 +64,6 @@ function Conversations() {
 
   const conversations = [1, 2, 3, 4, 5].map((n) => n.toString());
 
-  console.log(conversations);
-
   return (
     <Box
       width="100%"
@@ -75,10 +73,11 @@ function Conversations() {
       paddingRight={8}
     >
       <VStack paddingX={2}>
-        {conversations.map((link) => (
+        {conversations.map((id) => (
           <ConversationLink
-            conversationId={link}
-            isActive={link === conversationId}
+            key={id}
+            conversationId={id}
+            isActive={id === conversationId}
           />
         ))}
       </VStack>

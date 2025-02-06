@@ -11,6 +11,6 @@ public record CreateMessageRequest(
     public CreateMessageRequest {}
     
     public WMessage toMessage(String conversationId) {
-        return new WMessage(content, author, conversationId);
+        return WMessage.create(content, author, conversationId);
     }
 }

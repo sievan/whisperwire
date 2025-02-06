@@ -2,6 +2,9 @@ package com.jsievers.whisperwire.messages;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsievers.whisperwire.messages.db.WMessageEntity;
+import com.jsievers.whisperwire.messages.db.WMessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -22,6 +25,8 @@ public class MessageService {
     private final ConcurrentLinkedDeque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
     private final ConcurrentHashMap<String, ConcurrentLinkedDeque<WMessage>> recentMessagesMap = new ConcurrentHashMap<>();
     private static final int MAX_RECENT_MESSAGES = 20;
+    @Autowired
+    private WMessageRepository repository;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -61,7 +66,9 @@ public class MessageService {
             SendResult<String, WMessage> result = kafkaTemplate
                     .send("test-topic", message.conversationId(), message)
                     .get();
-            return "OK";
+            WMessageEntity entity = WMessageEntity.fromMessage(message);
+            repository.save(entity);
+            return entity.getId().toString();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Message sending interrupted", e);
