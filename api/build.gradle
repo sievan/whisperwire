@@ -1,7 +1,14 @@
+buildscript {
+	dependencies {
+		classpath("org.flywaydb:flyway-database-postgresql:11.3.1")
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '3.3.0'
 	id 'io.spring.dependency-management' version '1.1.5'
 	id 'java'
+	id "org.flywaydb.flyway" version "11.3.1"
 }
 
 group = 'com.example'
@@ -19,18 +26,35 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation("org.springframework.kafka:spring-kafka")
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+	// Kafka
+	implementation("org.springframework.kafka:spring-kafka")
 
 	// Websockets
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.projectlombok:lombok'
-	implementation 'org.apache.httpcomponents:httpclient'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 
+	// Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.postgresql:postgresql:42.7.5'
+	implementation("org.flywaydb:flyway-database-postgresql:11.3.1")
+
+	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
 	useJUnitPlatform()
+}
+
+flyway {
+	url = 'jdbc:postgresql://localhost:5432/wwire'
+	user = 'wwire'
+	password = 'admin'
+	schemas = ['public']
+	driver = 'org.postgresql.Driver'
+	baselineOnMigrate = true
+	locations = ['filesystem:src/main/resources/db/migration']
 }

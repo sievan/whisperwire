@@ -35,7 +35,22 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_CLUSTER_ID: "random-cluster-id"
 
+  db:
+    image: postgres:17-alpine
+    depends_on:
+      - kafka
+      - zookeeper
+    restart: always
+    environment:
+      POSTGRES_USER: wwire
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
 volumes:
   zookeeper_data:
   zookeeper_log:
   kafka_data:
+  pgdata:
