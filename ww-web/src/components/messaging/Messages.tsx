@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 
 type Message = {
   id: string;
@@ -32,19 +32,22 @@ async function fetchMessages(conversationId?: string): Promise<Message[]> {
 type MessageContainerProps = {
   author: string;
   content: string;
+  userIsAuthor: boolean;
 };
 
-const MESSAGE_SPACING = 3;
-
-const MessageContainer = ({ author, content }: MessageContainerProps) => (
+const MessageContainer = ({
+  author,
+  content,
+  userIsAuthor,
+}: MessageContainerProps) => (
   <VStack
     width={"70%"}
     alignItems={"left"}
     gap={1}
     padding={2}
-    margin={MESSAGE_SPACING}
     borderRadius={4}
-    backgroundColor={"blue.100"}
+    backgroundColor={userIsAuthor ? "blue.200" : "gray.200"}
+    alignSelf={userIsAuthor ? "flex-end" : "flex-start"}
   >
     <Text color="bodyText" fontSize="sm" fontWeight="bold">
       {author}
@@ -62,6 +65,10 @@ const Messages = chakra(({ className }: MessagesProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const ws = useRef<WebSocket | null>(null);
   const endOfChat = useRef<HTMLDivElement>(null);
+
+  const [searchParams] = useSearchParams();
+
+  const userName = searchParams.get("userName") || "Default User";
 
   useEffect(() => {
     (async () => {
@@ -103,16 +110,22 @@ const Messages = chakra(({ className }: MessagesProps) => {
       border="1px solid"
       borderRadius={8}
       borderColor="gray.300"
-      display="flex"
-      alignItems="flex-end"
       className={className}
     >
-      <Box flexGrow={1}>
-        {messages.map(({ id, author, content }) => (
-          <MessageContainer key={id} author={author} content={content} />
-        ))}
+      <VStack flexGrow={1} gap={3} paddingX={3}>
+        {messages.map(({ id, author, content }) => {
+          const userIsAuthor = userName === author;
+          return (
+            <MessageContainer
+              key={id}
+              author={author}
+              userIsAuthor={userIsAuthor}
+              content={content}
+            />
+          );
+        })}
         <div ref={endOfChat} />
-      </Box>
+      </VStack>
     </Box>
   );
 });

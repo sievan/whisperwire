@@ -1,7 +1,7 @@
 import { KeyboardEvent, useState } from "react";
 import { Textarea, IconButton, Box, VStack, chakra } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 
 type PostMessage = {
   author: string;
@@ -32,6 +32,10 @@ const MessageInput = chakra(({ className }: MessageInputProps) => {
   const { conversationId } = useParams();
   const [message, setMessage] = useState("");
 
+  const [searchParams] = useSearchParams();
+
+  const userName = searchParams.get("userName") || "Default User";
+
   const handleSubmit = () => {
     if (message.trim()) {
       if (!conversationId) {
@@ -39,7 +43,7 @@ const MessageInput = chakra(({ className }: MessageInputProps) => {
       }
       console.log("Sending message:", message);
       sendMessage(conversationId, {
-        author: "Sievan",
+        author: userName,
         content: message,
       });
       setMessage("");
@@ -83,7 +87,8 @@ const MessageInput = chakra(({ className }: MessageInputProps) => {
           aria-label="Send message"
           size="sm"
           _hover={{
-            bg: "blue.600",
+            backgroundColor: "blue.300",
+            // borderColor: "black",
           }}
         >
           <FiSend />
