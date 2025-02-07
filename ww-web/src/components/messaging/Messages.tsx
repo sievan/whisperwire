@@ -111,6 +111,8 @@ const Messages = chakra(({ className }: MessagesProps) => {
       borderRadius={8}
       borderColor="gray.300"
       className={className}
+      display="flex"
+      alignItems="safe flex-end"
     >
       <VStack flexGrow={1} gap={3} paddingX={3}>
         {messages.map(({ id, author, content }) => {

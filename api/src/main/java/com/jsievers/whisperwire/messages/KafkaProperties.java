@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Setter
 @Getter
 @Component
@@ -21,6 +24,7 @@ public class KafkaProperties {
         private String groupId;
         private String autoOffsetReset;
 
+        private Map<String, String> properties = new HashMap<>();
     }
 
 }

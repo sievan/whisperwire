@@ -39,4 +39,13 @@ public class WMessageEntity {
         );
     }
 
+    public WMessage toMessage() {
+        return new WMessage(
+                id.toString(),
+                content,
+                author,
+                String.valueOf(conversationId)
+        );
+    }
+
 }

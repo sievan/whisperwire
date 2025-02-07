@@ -88,7 +88,6 @@ const MessageInput = chakra(({ className }: MessageInputProps) => {
           size="sm"
           _hover={{
             backgroundColor: "blue.300",
-            // borderColor: "black",
           }}
         >
           <FiSend />

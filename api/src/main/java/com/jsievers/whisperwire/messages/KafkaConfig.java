@@ -53,10 +53,13 @@ class KafkaConfig {
     // Base consumer factory configuration
     private Map<String, Object> getBaseConsumerProps() {
         Map<String, Object> props = new HashMap<>();
+        Map<String, String> consumerProps = kafkaProperties.getConsumer().getProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, Integer.parseInt(consumerProps.get("heartbeat.interval.ms")));
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.parseInt(consumerProps.get("session.timeout.ms")));
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
         return props;
     }

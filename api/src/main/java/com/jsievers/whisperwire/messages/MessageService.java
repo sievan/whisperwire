@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsievers.whisperwire.messages.db.WMessageEntity;
 import com.jsievers.whisperwire.messages.db.WMessageRepository;
+import com.jsievers.whisperwire.messages.exception.MissingConversationIdException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +54,21 @@ public class MessageService {
         addMessage(message);
     }
 
-    public List<WMessage> getAllMessages(String topic, String conversationId) {
+    public List<WMessage> getAllConversationMessages(String topic, String conversationId) {
         if(conversationId == null) {
-            return new ArrayList<>(recentMessages);
+            throw new MissingConversationIdException("Conversation id is required");
         } else if (!recentMessagesMap.containsKey(conversationId)) {
             return new ArrayList<>();
         }
 
-        return new ArrayList<>(recentMessagesMap.get(conversationId));
+        List<WMessageEntity> fromRepository = repository.findAllByConversationId(Integer.parseInt(conversationId));
+
+
+//        return new ArrayList<>(recentMessagesMap.get(conversationId));
+        return fromRepository.stream().map(WMessageEntity::toMessage).toList().reversed();
     }
 
-    public String create(String conversationId, WMessage message) {
+    public String create(WMessage message) {
         try {
             SendResult<String, WMessage> result = kafkaTemplate
                     .send("test-topic", message.conversationId(), message)
