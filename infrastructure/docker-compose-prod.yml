@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  www:
+    image: wwweb:latest
+    build:
+      context: ../ww-web
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
   api:
     image: wwapi:latest
     build:
