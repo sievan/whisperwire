@@ -1,21 +1,18 @@
 package com.jsievers.whisperwire.messages;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsievers.whisperwire.messages.db.WMessageEntity;
 import com.jsievers.whisperwire.messages.db.WMessageRepository;
 import com.jsievers.whisperwire.messages.exception.MissingConversationIdException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
@@ -25,9 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class MessageService {
 
     private final KafkaTemplate<String, WMessage> kafkaTemplate;
-    private final ConcurrentLinkedDeque<WMessage> recentMessages = new ConcurrentLinkedDeque<>();
     private final ConcurrentHashMap<String, ConcurrentLinkedDeque<WMessage>> recentMessagesMap = new ConcurrentHashMap<>();
-    private static final int MAX_RECENT_MESSAGES = 20;
     @Autowired
     private WMessageRepository repository;
 
@@ -50,7 +45,6 @@ public class MessageService {
             concurrency = "3"  // Number of consumer threads
     )
     public void listen(WMessage message) {
-        recentMessages.addFirst(message);
         addMessage(message);
     }
 
@@ -63,8 +57,6 @@ public class MessageService {
 
         List<WMessageEntity> fromRepository = repository.findAllByConversationId(Integer.parseInt(conversationId));
 
-
-//        return new ArrayList<>(recentMessagesMap.get(conversationId));
         return fromRepository.stream().map(WMessageEntity::toMessage).toList().reversed();
     }
 
