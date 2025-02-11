@@ -48,7 +48,7 @@ spring:
     activate:
       on-profile: docker
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: cp-kafka:9092
   datasource:
     url: jdbc:postgresql://db:5432/wwire
     username: wwire

@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-topic-init
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka-topic-creator
+          image: confluentinc/cp-kafka:7.3.0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Wait for Kafka to be ready
+              sleep 30
+              kafka-topics --bootstrap-server cp-kafka:9092 \
+                --create --if-not-exists \
+                --topic test-topic --partitions 3 --replication-factor 1
+      restartPolicy: Never
+  backoffLimit: 4
