@@ -10,11 +10,11 @@ This repository contains the WhisperWire chat application, consisting of a web f
 ## Development Setup
 ### Prerequisites
 
-Node.js (v23 or higher)
-Java 23
-Docker and Docker Compose (eg. through Docker Desktop)
-IntelliJ IDEA (recommended for backend development)
-Minikube (for local Kubernetes development)
+- Node.js (v23 or higher)
+- Java 23
+- Docker and Docker Compose (eg. through Docker Desktop)
+- IntelliJ IDEA (recommended for backend development)
+- Minikube (for local Kubernetes development)
 
 ### Frontend (ww-web)
 Navigate to the frontend directory:
