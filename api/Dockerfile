@@ -30,7 +30,7 @@ COPY src ./src
 RUN ./gradlew build --no-daemon -x test
 
 # Runtime stage
-FROM gradle:jdk23-alpine
+FROM eclipse-temurin:23-jre-alpine
 
 WORKDIR /app
 

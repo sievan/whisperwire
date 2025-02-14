@@ -14,9 +14,9 @@ services:
       ZOOKEEPER_TICK_TIME: 500
       ZOOKEEPER_SESSION_TIMEOUT: 1500
 
-  kafka:
+  cp-kafka:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: kafka
+    container_name: cp-kafka
     ports:
       - "9092:9092"
     volumes:
@@ -41,7 +41,7 @@ services:
   db:
     image: postgres:17-alpine
     depends_on:
-      - kafka
+      - cp-kafka
       - zookeeper
     restart: always
     environment:

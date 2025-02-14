@@ -19,7 +19,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
-      - kafka
+      - cp-kafka
       - db
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
@@ -32,9 +32,9 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 500
       ZOOKEEPER_SESSION_TIMEOUT: 1500
-  kafka:
+  cp-kafka:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: kafka
+    container_name: cp-kafka
     volumes:
       - kafka_data:/var/lib/kafka/data
     depends_on:
@@ -56,7 +56,7 @@ services:
   db:
     image: postgres:17-alpine
     depends_on:
-      - kafka
+      - cp-kafka
       - zookeeper
     restart: always
     environment:
