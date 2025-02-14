@@ -36,7 +36,7 @@ You can specify the user name by changing the query parameter `userName`, eg. go
 
 1. Open the ww-api directory in IntelliJ IDEA
 2. Let the IDE sync the Gradle dependencies
-3. Add a run/debug configuration with:
+3. Add a run/debug configuration (if it doesn't pick it up automatically from `.run/Start dev server.run.xml`) with:
 
 ```bash
 ./gradlew bootRun SPRING_PROFILES_ACTIVE=local
