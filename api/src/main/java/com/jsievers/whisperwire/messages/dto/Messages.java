@@ -1,4 +1,4 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.dto;
 
 import java.util.List;
 

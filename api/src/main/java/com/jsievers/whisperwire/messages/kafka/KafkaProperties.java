@@ -1,4 +1,4 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.kafka;
 
 import lombok.Getter;
 import lombok.Setter;

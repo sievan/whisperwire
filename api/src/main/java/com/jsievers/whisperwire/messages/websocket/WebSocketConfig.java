@@ -1,4 +1,4 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.websocket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

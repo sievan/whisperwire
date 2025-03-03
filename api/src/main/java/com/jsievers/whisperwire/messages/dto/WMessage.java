@@ -1,4 +1,4 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,6 +1,7 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.kafka;
 
 
+import com.jsievers.whisperwire.messages.dto.WMessage;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;

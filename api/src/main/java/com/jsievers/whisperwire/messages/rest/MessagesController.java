@@ -1,16 +1,14 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.rest;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jsievers.whisperwire.messages.dto.Messages;
+import com.jsievers.whisperwire.messages.dto.WMessage;
 import com.jsievers.whisperwire.messages.exception.MissingConversationIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @CrossOrigin(origins = "*")
 @RestController

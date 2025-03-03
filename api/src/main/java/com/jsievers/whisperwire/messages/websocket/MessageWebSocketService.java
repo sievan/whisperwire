@@ -1,9 +1,9 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsievers.whisperwire.messages.dto.WMessage;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 

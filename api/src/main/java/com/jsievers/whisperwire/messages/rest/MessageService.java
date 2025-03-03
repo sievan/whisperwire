@@ -1,6 +1,7 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsievers.whisperwire.messages.dto.WMessage;
 import com.jsievers.whisperwire.messages.db.WMessageEntity;
 import com.jsievers.whisperwire.messages.db.WMessageRepository;
 import com.jsievers.whisperwire.messages.exception.MissingConversationIdException;
@@ -11,7 +12,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -23,10 +23,9 @@ public class MessageService {
 
     private final KafkaTemplate<String, WMessage> kafkaTemplate;
     private final ConcurrentHashMap<String, ConcurrentLinkedDeque<WMessage>> recentMessagesMap = new ConcurrentHashMap<>();
+
     @Autowired
     private WMessageRepository repository;
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     public MessageService(KafkaTemplate<String, WMessage> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -51,8 +50,6 @@ public class MessageService {
     public List<WMessage> getAllConversationMessages(String topic, String conversationId) {
         if(conversationId == null) {
             throw new MissingConversationIdException("Conversation id is required");
-        } else if (!recentMessagesMap.containsKey(conversationId)) {
-            return new ArrayList<>();
         }
 
         List<WMessageEntity> fromRepository = repository.findAllByConversationId(Integer.parseInt(conversationId));

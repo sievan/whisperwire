@@ -1,4 +1,4 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.websocket;
 
 import org.apache.http.NameValuePair;
 import org.springframework.stereotype.Component;

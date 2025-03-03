@@ -1,7 +1,8 @@
-package com.jsievers.whisperwire.messages;
+package com.jsievers.whisperwire.messages.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jsievers.whisperwire.messages.dto.WMessage;
 
 public record CreateMessageRequest(
         @JsonProperty("content") String content,

@@ -1,6 +1,6 @@
 package com.jsievers.whisperwire.messages.db;
 
-import com.jsievers.whisperwire.messages.WMessage;
+import com.jsievers.whisperwire.messages.dto.WMessage;
 import jakarta.persistence.*;
 import lombok.Getter;
 
